@@ -1,0 +1,4 @@
+2018-09-28 21:19:46,539 - INFO - test - staticvar1 - staticvar2 - Info test message... - var1 - var2 - var3
+2018-09-28 21:20:43,242 - INFO - test - staticvar1 - staticvar2 - Info test message... - var1 - var2 - var3
+2018-09-28 21:22:11,771 - INFO - test - staticvar1 - staticvar2 - Info test message... - var1 - var2 - var3
+2018-09-28 21:22:11,771 - ERROR - test2 - Error test message...
