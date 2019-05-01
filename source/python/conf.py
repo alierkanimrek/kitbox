@@ -26,13 +26,14 @@ class KBConfig:
 
 
 	def __init__(self, fn = "default", path = ""):
+		filename = fn
 		if path == "":
 			path, filename = os.path.split(os.path.abspath(__file__))
 			self._fn = os.path.join(path, fn+".conf")
 		else:
 			self._fn = os.path.join(path, fn+".conf")
 		try:
-			self._checklist = __import__("testconf")
+			self._checklist = __import__(filename)
 		except:
 			self._checklist = None
 		self.reload()
@@ -82,9 +83,9 @@ class KBConfig:
 					vars(self)[section] = obj()
 			else:
 				raise Exception("Value error", l)
-		
+
 		for s in self._checklist.__dir__():
-			if s[0] != "_":
+			if s[0] != "_" and type(vars(self._checklist)[s]) == "dict":
 				for v in vars(self._checklist)[s].keys():
 					if v not in vars(self)[s].__dir__():
 						self._makevar(s, v, vars(self._checklist)[s][v]["default"])
@@ -148,4 +149,4 @@ def test():
 	
 
 	
-test()
+#test()
