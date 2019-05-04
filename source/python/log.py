@@ -53,10 +53,10 @@ class KBLogger:
         self._interval = 1
         self._backupCount = 7
         self._format = "%(asctime)s - %(levelname)s - %(message)s"
-        self._log = logging.getLogger(self._name)
+        self.log = logging.getLogger(self._name)
         self._fh = ""
         self._setup()
-        self._job = ""
+
 
 
 
@@ -68,7 +68,7 @@ class KBLogger:
     def level(self, level):
         if level in LOG_LEVELS.keys():
             self._level = level
-            self._log.setLevel(LOG_LEVELS[self._level])
+            self.log.setLevel(LOG_LEVELS[self._level])
 
     @property
     def when(self):
@@ -113,60 +113,72 @@ class KBLogger:
     def _setup(self):
         fformat = logging.Formatter(self._format)
         if self._fh != "": 
-            self._log.removeHandler(self._fh)
+            self.log.removeHandler(self._fh)
         self._fh = handlers.TimedRotatingFileHandler(
             self._fn,
             when = self._when,
             interval = self._interval,
             backupCount = self._backupCount)
         self._fh.setFormatter(fformat)
-        self._log.addHandler(self._fh)
+        self.log.addHandler(self._fh)
         
 
 
     def job(self, name, *args):
-        if name != "":
-            self._job = name
-            self._statics = list(args)
-            return(self)
+        return(KBLoggerJob(self, name, list(args)))
 
+
+
+
+
+
+
+
+
+
+
+class KBLoggerJob:
+
+
+    def __init__(self, logger, name, args):
+        self._logger = logger
+        self._job = name
+        self._statics = args
 
 
     def i(self, msg, *args):
-        self._write("I", msg, *args)
+        self.write("I", msg, *args)
 
     def e(self, msg, *args):
-        self._write("E", msg, *args)
+        self.write("E", msg, *args)
 
     def c(self, msg, *args):
-        self._write("C", msg, *args)
+        self.write("C", msg, *args)
 
     def w(self, msg, *args):
-        self._write("W", msg, *args)
+        self.write("W", msg, *args)
 
     def d(self, msg, *args):
-        self._write("D", msg, *args)
+        self.write("D", msg, *args)
 
 
-    def _write(self, typ, msg, *args):
+    def write(self, typ, msg, *args):
         msglist = self._statics + [msg] + list(args)
         msg = self._job
         for i in msglist:
-            msg += " - " + i
+            msg += " - " + str(i)
         if typ == "C":
             self._log.critical(msg)
         if typ == "E":
-            self._log.error(msg)
+            self._logger.log.error(msg)
         if typ == "W":
-            self._log.warning(msg)
+            self._logger.log.warning(msg)
         if typ == "I":
-            self._log.info(msg)
+            self._logger.log.info(msg)
         if typ == "D":
-            self._log.debug(msg)
+            self._logger.log.debug(msg)
         if typ == "N":
-            self._log.notset(msg)
-
-
+            self._logger.log.notset(msg)
 
 
 
@@ -183,4 +195,4 @@ def test():
     testjob.i("Info test message...")
     testjob2.e("Error test message...")
 
-#test()
+test()
