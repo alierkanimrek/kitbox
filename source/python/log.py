@@ -7,8 +7,8 @@
 
 
 
-
-
+import sys
+import traceback
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from logging import handlers
@@ -151,6 +151,12 @@ class KBLoggerJob:
 
     def e(self, msg, *args):
         self.write("E", msg, *args)
+
+    def e_tb(self, msg, inst, *args):
+        self.e(msg, *args)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        last = traceback.format_tb(exc_traceback)[len(traceback.format_tb(exc_traceback))-1]
+        self.d(type(inst), inst.args, last)
 
     def c(self, msg, *args):
         self.write("C", msg, *args)
